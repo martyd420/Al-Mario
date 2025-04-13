@@ -4,7 +4,7 @@ const MOVE_SPEED = 7;
 const ENEMY_SPEED = 2.5;
 
 export class Player {
-  constructor(pos) {
+  constructor(pos, spriteManager) {
     this.x = pos.x;
     this.y = pos.y;
     this.vx = 0;
@@ -12,6 +12,9 @@ export class Player {
     this.width = 40;
     this.height = 48;
     this.onGround = false;
+    this.spriteManager = spriteManager;
+    this.facing = 'right'; // left/right/up/down
+    this.lastNonZeroVx = 1;
   }
 
   update(input, level, enemies, coins) {
@@ -33,6 +36,18 @@ export class Player {
     this.moveAndCollide(level);
 
     // TODO: Check collisions with enemies and coins
+    // Update facing direction
+    if (this.vx > 0) {
+      this.facing = 'right';
+      this.lastNonZeroVx = 1;
+    } else if (this.vx < 0) {
+      this.facing = 'left';
+      this.lastNonZeroVx = -1;
+    } else if (this.vy < 0) {
+      this.facing = 'up';
+    } else if (this.vy > 0) {
+      this.facing = 'down';
+    }
   }
 
   moveAndCollide(level) {
@@ -70,6 +85,20 @@ export class Player {
   }
 
   draw(ctx, cameraX = 0) {
+    if (this.spriteManager && this.spriteManager.ready) {
+      let dir = this.facing;
+      // Fallback to last horizontal if idle
+      if (dir === 'idle' || dir === undefined) {
+        dir = this.lastNonZeroVx < 0 ? 'left' : 'right';
+      }
+      const img = this.spriteManager.getSprite('player', dir) ||
+                  this.spriteManager.getSprite('player', 'idle');
+      if (img) {
+        ctx.drawImage(img, this.x - cameraX, this.y, this.width, this.height);
+        return;
+      }
+    }
+    // Fallback: colored rect
     ctx.fillStyle = '#ff4';
     ctx.fillRect(this.x - cameraX, this.y, this.width, this.height);
     ctx.strokeStyle = '#222';
@@ -78,7 +107,7 @@ export class Player {
 }
 
 export class Enemy {
-  constructor(pos) {
+  constructor(pos, spriteManager) {
     this.x = pos.x;
     this.y = pos.y;
     this.vx = -ENEMY_SPEED; // Always start moving left for deterministic behavior
@@ -86,6 +115,8 @@ export class Enemy {
     this.width = 40;
     this.height = 40;
     this.onGround = false;
+    this.spriteManager = spriteManager;
+    this.facing = 'left';
   }
 
   update(level, player) {
@@ -104,6 +135,9 @@ export class Enemy {
     } else {
       this.onGround = false;
     }
+    // Update facing
+    if (this.vx > 0) this.facing = 'right';
+    else if (this.vx < 0) this.facing = 'left';
   }
 
   collidesWithLevel(level) {
@@ -122,6 +156,16 @@ export class Enemy {
   }
 
   draw(ctx, cameraX = 0) {
+    if (this.spriteManager && this.spriteManager.ready) {
+      let dir = this.facing || 'left';
+      const img = this.spriteManager.getSprite('enemy', dir) ||
+                  this.spriteManager.getSprite('enemy', 'idle');
+      if (img) {
+        ctx.drawImage(img, this.x - cameraX, this.y, this.width, this.height);
+        return;
+      }
+    }
+    // Fallback: colored rect
     ctx.fillStyle = '#b44';
     ctx.fillRect(this.x - cameraX, this.y, this.width, this.height);
     ctx.strokeStyle = '#222';
@@ -130,15 +174,24 @@ export class Enemy {
 }
 
 export class Coin {
-  constructor(pos) {
+  constructor(pos, spriteManager) {
     this.x = pos.x;
     this.y = pos.y;
     this.radius = 16;
     this.collected = false;
+    this.spriteManager = spriteManager;
   }
 
   draw(ctx, cameraX = 0) {
     if (this.collected) return;
+    if (this.spriteManager && this.spriteManager.ready) {
+      const img = this.spriteManager.getSprite('coin', 'default');
+      if (img) {
+        ctx.drawImage(img, this.x - cameraX, this.y, this.radius * 2, this.radius * 2);
+        return;
+      }
+    }
+    // Fallback: yellow circle
     ctx.beginPath();
     ctx.arc(this.x + this.radius - cameraX, this.y + this.radius, this.radius, 0, 2 * Math.PI);
     ctx.fillStyle = '#FFD700';

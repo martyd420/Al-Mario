@@ -3,6 +3,7 @@ import { Input } from './input.js';
 import { Level } from './level.js';
 import { Player, Enemy, Coin } from './entities.js';
 import { HUD } from './hud.js';
+import { SpriteManager } from './sprites.js';
 // import { Sound } from './sound.js'; // Optional
 
 // Game constants
@@ -39,6 +40,7 @@ let coins = [];
 let hud = null;
 let input = null;
 let renderer = null;
+let spriteManager = null;
 let gameState = 'playing'; // 'playing', 'dead', 'win'
 let score = 0;
 let lives = 3;
@@ -51,9 +53,9 @@ async function loadLevel(levelNum) {
   const resp = await fetch(`levels/level${levelNum}.json`);
   levelData = await resp.json();
   level = new Level(levelData);
-  player = new Player(levelData.playerStart);
-  enemies = levelData.enemies.map(e => new Enemy(e));
-  coins = levelData.coins.map(c => new Coin(c));
+  player = new Player(levelData.playerStart, spriteManager);
+  enemies = levelData.enemies.map(e => new Enemy(e, spriteManager));
+  coins = levelData.coins.map(c => new Coin(c, spriteManager));
   hud = new HUD();
   input = new Input();
   renderer = new Renderer(ctx, level, player, enemies, coins, hud);
@@ -180,6 +182,11 @@ function gameLoop(timestamp) {
 }
 
 // Start game
-loadLevel(currentLevel).then(() => {
+async function startGame() {
+  spriteManager = new SpriteManager();
+  await spriteManager.loadConfig();
+  await loadLevel(currentLevel);
   requestAnimationFrame(gameLoop);
-});
+}
+
+startGame();

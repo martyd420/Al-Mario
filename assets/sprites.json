@@ -1,0 +1,17 @@
+{
+  "player": {
+    "right": "assets/player_right.png",
+    "left": "assets/player_left.png",
+    "up": "assets/player_right.png",
+    "down": "assets/player_right.png",
+    "idle": "assets/player_right.png"
+  },
+  "enemy": {
+    "right": "assets/enemy.png",
+    "left": "assets/enemy.png",
+    "idle": "assets/enemy.png"
+  },
+  "coin": {
+    "default": "assets/coin.png"
+  }
+}
