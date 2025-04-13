@@ -43,6 +43,9 @@ let gameState = 'playing'; // 'playing', 'dead', 'win'
 let score = 0;
 let lives = 3;
 
+// Camera state
+let cameraX = 0;
+
 // Load level JSON
 async function loadLevel(levelNum) {
   const resp = await fetch(`levels/level${levelNum}.json`);
@@ -133,6 +136,21 @@ function gameLoop(timestamp) {
       }
     }
 
+    // Camera logic
+    // Center Mario, or offset slightly forward in direction of movement
+    const viewportWidth = canvas.width;
+    const levelPixelWidth = level.width * level.tileSize;
+    // Forward offset: 40% from left if moving right, 60% if moving left, else center
+    let offset = 0.5;
+    if (player.vx > 0.5) offset = 0.4;
+    else if (player.vx < -0.5) offset = 0.6;
+    const targetCameraX = Math.max(0, Math.min(
+      player.x + player.width * 0.5 - viewportWidth * offset,
+      levelPixelWidth - viewportWidth
+    ));
+    // Smoothly interpolate cameraX toward target (lerp)
+    cameraX += (targetCameraX - cameraX) * 0.15;
+
     // Helper: rectangle overlap
     function rectsOverlap(a, b) {
       // Accepts {x, y, width, height} or Coin (with radius)
@@ -157,7 +175,7 @@ function gameLoop(timestamp) {
     }
     hud.update({ score, lives, level: currentLevel });
   }
-  renderer.render();
+  renderer.render(cameraX);
   requestAnimationFrame(gameLoop);
 }
 

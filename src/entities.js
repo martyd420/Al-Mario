@@ -69,11 +69,11 @@ export class Player {
     });
   }
 
-  draw(ctx) {
+  draw(ctx, cameraX = 0) {
     ctx.fillStyle = '#ff4';
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fillRect(this.x - cameraX, this.y, this.width, this.height);
     ctx.strokeStyle = '#222';
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.strokeRect(this.x - cameraX, this.y, this.width, this.height);
   }
 }
 
@@ -121,11 +121,11 @@ export class Enemy {
     });
   }
 
-  draw(ctx) {
+  draw(ctx, cameraX = 0) {
     ctx.fillStyle = '#b44';
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    ctx.fillRect(this.x - cameraX, this.y, this.width, this.height);
     ctx.strokeStyle = '#222';
-    ctx.strokeRect(this.x, this.y, this.width, this.height);
+    ctx.strokeRect(this.x - cameraX, this.y, this.width, this.height);
   }
 }
 
@@ -137,10 +137,10 @@ export class Coin {
     this.collected = false;
   }
 
-  draw(ctx) {
+  draw(ctx, cameraX = 0) {
     if (this.collected) return;
     ctx.beginPath();
-    ctx.arc(this.x + this.radius, this.y + this.radius, this.radius, 0, 2 * Math.PI);
+    ctx.arc(this.x + this.radius - cameraX, this.y + this.radius, this.radius, 0, 2 * Math.PI);
     ctx.fillStyle = '#FFD700';
     ctx.fill();
     ctx.strokeStyle = '#C49A6C';

@@ -18,23 +18,24 @@ export class Level {
   }
 
   // Draw the tilemap
-  draw(ctx) {
+  draw(ctx, cameraX = 0) {
     const ts = this.tileSize;
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const tile = this.tiles[y][x];
+        const drawX = x * ts - cameraX;
         if (tile === 1) {
           // Solid block
           ctx.fillStyle = '#8B5C2A';
-          ctx.fillRect(x * ts, y * ts, ts, ts);
+          ctx.fillRect(drawX, y * ts, ts, ts);
           ctx.strokeStyle = '#C49A6C';
-          ctx.strokeRect(x * ts, y * ts, ts, ts);
+          ctx.strokeRect(drawX, y * ts, ts, ts);
         } else if (tile === 2) {
           // Coin block (drawn as a yellow block)
           ctx.fillStyle = '#FFD700';
-          ctx.fillRect(x * ts, y * ts, ts, ts);
+          ctx.fillRect(drawX, y * ts, ts, ts);
           ctx.strokeStyle = '#C49A6C';
-          ctx.strokeRect(x * ts, y * ts, ts, ts);
+          ctx.strokeRect(drawX, y * ts, ts, ts);
         } else {
           // Empty space
           // Optionally draw background grid
@@ -43,13 +44,14 @@ export class Level {
     }
     // Draw goal flag
     if (this.goal) {
+      const gx = this.goal.x * ts - cameraX;
       ctx.fillStyle = '#fff';
-      ctx.fillRect(this.goal.x * ts + ts * 0.7, this.goal.y * ts - ts * 1.2, ts * 0.2, ts * 1.2);
+      ctx.fillRect(gx + ts * 0.7, this.goal.y * ts - ts * 1.2, ts * 0.2, ts * 1.2);
       ctx.fillStyle = '#e33';
       ctx.beginPath();
-      ctx.moveTo(this.goal.x * ts + ts * 0.8, this.goal.y * ts - ts * 1.2);
-      ctx.lineTo(this.goal.x * ts + ts * 1.2, this.goal.y * ts - ts * 1.0);
-      ctx.lineTo(this.goal.x * ts + ts * 0.8, this.goal.y * ts - ts * 0.8);
+      ctx.moveTo(gx + ts * 0.8, this.goal.y * ts - ts * 1.2);
+      ctx.lineTo(gx + ts * 1.2, this.goal.y * ts - ts * 1.0);
+      ctx.lineTo(gx + ts * 0.8, this.goal.y * ts - ts * 0.8);
       ctx.closePath();
       ctx.fill();
     }

@@ -8,22 +8,22 @@ export class Renderer {
     this.hud = hud;
   }
 
-  render() {
+  render(cameraX = 0) {
     const ctx = this.ctx;
     // Clear screen
     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 
     // Draw level tiles
-    this.level.draw(ctx);
+    this.level.draw(ctx, cameraX);
 
     // Draw coins
-    this.coins.forEach(coin => coin.draw(ctx));
+    this.coins.forEach(coin => coin.draw(ctx, cameraX));
 
     // Draw enemies
-    this.enemies.forEach(enemy => enemy.draw(ctx));
+    this.enemies.forEach(enemy => enemy.draw(ctx, cameraX));
 
     // Draw player
-    this.player.draw(ctx);
+    this.player.draw(ctx, cameraX);
 
     // Draw HUD (score, lives, level)
     this.hud.draw(ctx);
