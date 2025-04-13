@@ -151,7 +151,7 @@ function gameLoop(timestamp) {
       levelPixelWidth - viewportWidth
     ));
     // Smoothly interpolate cameraX toward target (lerp)
-    cameraX += (targetCameraX - cameraX) * 0.15;
+    cameraX += (targetCameraX - cameraX) * 0.02;
 
     // Helper: rectangle overlap
     function rectsOverlap(a, b) {
