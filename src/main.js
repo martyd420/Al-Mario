@@ -43,9 +43,10 @@ let hud = null;
 let input = null;
 let renderer = null;
 let spriteManager = null;
-let gameState = 'playing'; // 'playing', 'dead', 'win'
+let gameState = 'playing'; // 'playing', 'dead', 'win', 'gameover'
 let score = 0;
 let lives = 3;
+let deathTimeout = null;
 
 // Camera state
 let cameraX = 0;
@@ -109,19 +110,21 @@ function gameLoop(timestamp) {
       player.vy = -14; // bounce up
       score += 1;
     } else if (hitEnemy) {
-      lives -= 1;
-      if (lives > 0) {
-        // Respawn player at start
-        player = new Player(levelData.playerStart);
-      } else {
+      if (gameState !== 'dead' && gameState !== 'gameover') {
+        lives -= 1;
         gameState = 'dead';
-        setTimeout(() => {
-          // Reset game
-          score = 0;
-          lives = 3;
-          currentLevel = 1;
-          loadLevel(currentLevel);
-        }, 1500);
+        if (lives > 0) {
+          // Show death animation or pause, then respawn
+          deathTimeout = setTimeout(() => {
+            // Reload the level to its initial state, but keep score and lives
+            loadLevel(currentLevel).then(() => {
+              gameState = 'playing';
+            });
+          }, 1000);
+        } else {
+          // Game over
+          showGameOver();
+        }
       }
     }
 
@@ -185,9 +188,45 @@ function gameLoop(timestamp) {
       }
     }
     hud.update({ score, lives, level: currentLevel });
+  } else if (gameState === 'gameover') {
+    renderer.render(cameraX);
+    return;
   }
   renderer.render(cameraX);
   requestAnimationFrame(gameLoop);
+}
+
+// Show/hide Game Over overlay
+function showGameOver() {
+  gameState = 'gameover';
+  const overlay = document.getElementById('gameover-overlay');
+  if (overlay) overlay.style.display = 'flex';
+}
+function hideGameOver() {
+  const overlay = document.getElementById('gameover-overlay');
+  if (overlay) overlay.style.display = 'none';
+}
+
+// Restart button handler
+const restartBtn = document.getElementById('restart-btn');
+if (restartBtn) {
+  restartBtn.onclick = () => {
+    hideGameOver();
+    score = 0;
+    lives = 3;
+    currentLevel = 1;
+    loadLevel(currentLevel).then(() => {
+      player.onReward = function(type) {
+        if (type === "coin") score += 100;
+        else if (type === "life") lives += 1;
+        else if (type === "invincibility") {
+          // TODO: implement invincibility effect
+        }
+      };
+      gameState = 'playing';
+      requestAnimationFrame(gameLoop);
+    });
+  };
 }
 
 // Start game

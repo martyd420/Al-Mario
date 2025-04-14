@@ -64,6 +64,10 @@
   <div id="game-container">
     <div id="hud">Score: 0 &nbsp; Lives: 3 &nbsp; Level: 1</div>
     <canvas id="game-canvas" width="800" height="600"></canvas>
+    <div id="gameover-overlay" style="display:none; position:absolute; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.8); color:#fff; font-family:'Press Start 2P',monospace; font-size:2em; align-items:center; justify-content:center; flex-direction:column; z-index:10;">
+      <div style="margin-top:20vh;">Game Over</div>
+      <button id="restart-btn" style="margin-top:2em; font-size:1em; padding:0.5em 2em; border-radius:8px; border:none; background:#fff; color:#222; cursor:pointer;">Restart</button>
+    </div>
   </div>
   <script type="module" src="src/main.js"></script>
 </body>
