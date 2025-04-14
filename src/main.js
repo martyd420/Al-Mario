@@ -1,7 +1,9 @@
 import { Renderer } from './renderer.js';
 import { Input } from './input.js';
 import { Level } from './level.js';
-import { Player, Enemy, Coin } from './entities.js';
+import { Player } from './entities/player.js';
+import { Enemy } from './entities/enemy.js';
+import { Coin } from './entities/coin.js';
 import { HUD } from './hud.js';
 import { SpriteManager } from './sprites.js';
 // import { Sound } from './sound.js'; // Optional
