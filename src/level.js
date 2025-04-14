@@ -59,18 +59,21 @@ export class Level {
         let drawY = y * ts;
         const bump = this.bumpTiles[`${x},${y}`];
         if (bump) drawY += bump.offset;
+
         if (tile === 1) {
           // Solid block (standard)
           ctx.fillStyle = '#8B5C2A';
           ctx.fillRect(drawX, drawY, ts, ts);
           ctx.strokeStyle = '#C49A6C';
           ctx.strokeRect(drawX, drawY, ts, ts);
+
         } else if (tile === 2) {
           // Indestructible block
           ctx.fillStyle = '#444';
           ctx.fillRect(drawX, drawY, ts, ts);
           ctx.strokeStyle = '#aaa';
           ctx.strokeRect(drawX, drawY, ts, ts);
+
         } else if (tile === 3) {
           // Breakable block
           ctx.fillStyle = '#b97a56';
@@ -78,23 +81,27 @@ export class Level {
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(drawX, drawY, ts, ts);
         } else if (tile === 4) {
+
           // Hidden coin block
           ctx.fillStyle = '#e3c800';
           ctx.fillRect(drawX, drawY, ts, ts);
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(drawX, drawY, ts, ts);
+
         } else if (tile === 5) {
           // Hidden extra life block
           ctx.fillStyle = '#4ad14a';
           ctx.fillRect(drawX, drawY, ts, ts);
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(drawX, drawY, ts, ts);
+
         } else if (tile === 6) {
           // Hidden invincibility block
           ctx.fillStyle = '#6ad1e3';
           ctx.fillRect(drawX, drawY, ts, ts);
           ctx.strokeStyle = '#fff';
           ctx.strokeRect(drawX, drawY, ts, ts);
+
         } else {
           // Empty space
           // Optionally draw background grid
