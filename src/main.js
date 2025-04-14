@@ -56,6 +56,13 @@ async function loadLevel(levelNum) {
   levelData = await resp.json();
   level = new Level(levelData);
   player = new Player(levelData.playerStart, spriteManager);
+  player.onReward = function(type) {
+    if (type === "coin") score += 100;
+    else if (type === "life") lives += 1;
+    else if (type === "invincibility") {
+      // TODO: implement invincibility effect
+    }
+  };
   enemies = levelData.enemies.map(e => new Enemy(e, spriteManager));
   coins = levelData.coins.map(c => new Coin(c, spriteManager));
   hud = new HUD();

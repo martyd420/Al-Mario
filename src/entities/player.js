@@ -14,6 +14,7 @@ export class Player {
     this.spriteManager = spriteManager;
     this.facing = 'right'; // left/right/up/down
     this.lastNonZeroVx = 1;
+    this.onReward = null; // callback: (type) => void
   }
 
   update(input, level, enemies, coins) {
@@ -102,12 +103,15 @@ export class Player {
                 if (level.coins) {
                   level.coins.push({ x: tx * level.tileSize, y: ty * level.tileSize });
                 }
+                if (typeof this.onReward === "function") this.onReward("coin");
                 // TODO: play coin sound
               } else if (tileId === 5) {
                 // Spawn extra life (could push to a powerups array)
+                if (typeof this.onReward === "function") this.onReward("life");
                 // TODO: implement extra life entity and spawn here
               } else if (tileId === 6) {
                 // Spawn invincibility (could push to a powerups array)
+                if (typeof this.onReward === "function") this.onReward("invincibility");
                 // TODO: implement invincibility entity and spawn here
               }
               if (typeof level.setTile === "function") {
