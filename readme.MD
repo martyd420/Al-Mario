@@ -13,6 +13,7 @@ ai devs fb group: https://www.facebook.com/groups/ai.vyvojari
 
 #### Used prompts:
 
+The first commit is the result of the four prompts listed below. I will add more prompts after completion.
 
 #### Prompt 1
 ```
