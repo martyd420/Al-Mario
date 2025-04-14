@@ -6,7 +6,7 @@ import { Enemy } from './entities/enemy.js';
 import { Coin } from './entities/coin.js';
 import { HUD } from './hud.js';
 import { SpriteManager } from './sprites.js';
-// import { Sound } from './sound.js'; // Optional
+// import { Sound } from './sound.js'; // Optional 
 
 // Game constants
 const MIN_WIDTH = 800;
