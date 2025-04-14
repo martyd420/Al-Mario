@@ -17,25 +17,84 @@ export class Level {
     return this.tiles[y][x];
   }
 
+  setTile(x, y, id) {
+    if (x >= 0 && y >= 0 && x < this.width && y < this.height) {
+      this.tiles[y][x] = id;
+    }
+  }
+
+  bumpTile(x, y, callback) {
+    const key = `${x},${y}`;
+    if (this.bumpTiles[key]) return; // already bumping
+    this.bumpTiles[key] = { offset: 0, timer: 0, callback, phase: 'up' };
+  }
+
   // Draw the tilemap
   draw(ctx, cameraX = 0) {
+    if (!this.bumpTiles) this.bumpTiles = {};
     const ts = this.tileSize;
+    // Animate bump tiles
+    for (const key in this.bumpTiles) {
+      const [x, y] = key.split(',').map(Number);
+      const bump = this.bumpTiles[key];
+      if (bump.phase === 'up') {
+        bump.offset -= 3;
+        bump.timer += 1;
+        if (bump.offset <= -12) {
+          bump.phase = 'down';
+          if (bump.callback) bump.callback();
+        }
+      } else if (bump.phase === 'down') {
+        bump.offset += 2;
+        if (bump.offset >= 0) {
+          bump.offset = 0;
+          delete this.bumpTiles[key];
+        }
+      }
+    }
     for (let y = 0; y < this.height; y++) {
       for (let x = 0; x < this.width; x++) {
         const tile = this.tiles[y][x];
         const drawX = x * ts - cameraX;
+        let drawY = y * ts;
+        const bump = this.bumpTiles[`${x},${y}`];
+        if (bump) drawY += bump.offset;
         if (tile === 1) {
-          // Solid block
+          // Solid block (standard)
           ctx.fillStyle = '#8B5C2A';
-          ctx.fillRect(drawX, y * ts, ts, ts);
+          ctx.fillRect(drawX, drawY, ts, ts);
           ctx.strokeStyle = '#C49A6C';
-          ctx.strokeRect(drawX, y * ts, ts, ts);
+          ctx.strokeRect(drawX, drawY, ts, ts);
         } else if (tile === 2) {
-          // Coin block (drawn as a yellow block)
-          ctx.fillStyle = '#FFD700';
-          ctx.fillRect(drawX, y * ts, ts, ts);
-          ctx.strokeStyle = '#C49A6C';
-          ctx.strokeRect(drawX, y * ts, ts, ts);
+          // Indestructible block
+          ctx.fillStyle = '#444';
+          ctx.fillRect(drawX, drawY, ts, ts);
+          ctx.strokeStyle = '#aaa';
+          ctx.strokeRect(drawX, drawY, ts, ts);
+        } else if (tile === 3) {
+          // Breakable block
+          ctx.fillStyle = '#b97a56';
+          ctx.fillRect(drawX, drawY, ts, ts);
+          ctx.strokeStyle = '#fff';
+          ctx.strokeRect(drawX, drawY, ts, ts);
+        } else if (tile === 4) {
+          // Hidden coin block
+          ctx.fillStyle = '#e3c800';
+          ctx.fillRect(drawX, drawY, ts, ts);
+          ctx.strokeStyle = '#fff';
+          ctx.strokeRect(drawX, drawY, ts, ts);
+        } else if (tile === 5) {
+          // Hidden extra life block
+          ctx.fillStyle = '#4ad14a';
+          ctx.fillRect(drawX, drawY, ts, ts);
+          ctx.strokeStyle = '#fff';
+          ctx.strokeRect(drawX, drawY, ts, ts);
+        } else if (tile === 6) {
+          // Hidden invincibility block
+          ctx.fillStyle = '#6ad1e3';
+          ctx.fillRect(drawX, drawY, ts, ts);
+          ctx.strokeStyle = '#fff';
+          ctx.strokeRect(drawX, drawY, ts, ts);
         } else {
           // Empty space
           // Optionally draw background grid

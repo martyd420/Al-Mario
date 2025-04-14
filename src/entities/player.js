@@ -58,7 +58,70 @@ export class Player {
     }
     // Y axis
     this.y += this.vy;
+    let bumpedTile = null;
+    let bumpTileX = null, bumpTileY = null, bumpTileId = null;
+    if (this.vy < 0) {
+      // Check for tile above head (center and corners)
+      const ts = level.tileSize;
+      const headPoints = [
+        { x: this.x + 2, y: this.y },
+        { x: this.x + this.width / 2, y: this.y },
+        { x: this.x + this.width - 2, y: this.y }
+      ];
+      for (const pt of headPoints) {
+        const tx = Math.floor(pt.x / ts);
+        const ty = Math.floor((pt.y - 1) / ts);
+        const tileId = level.getTile(tx, ty);
+        if ([3, 4, 5, 6].includes(tileId)) {
+          bumpedTile = { tx, ty, tileId };
+          bumpTileX = tx;
+          bumpTileY = ty;
+          bumpTileId = tileId;
+          break;
+        }
+      }
+    }
     if (this.collidesWithLevel(level)) {
+      // If bumping a special tile, handle it
+      if (bumpedTile) {
+        const { tx, ty, tileId } = bumpedTile;
+        if (tileId === 3) {
+          // Breakable: break and disappear
+          if (typeof level.setTile === "function") {
+            level.setTile(tx, ty, 0);
+          } else {
+            console.warn("level.setTile is not a function", level);
+          }
+          // TODO: play break sound, add particles
+        } else if ([4, 5, 6].includes(tileId)) {
+          // Reward tiles: bump animation, spawn reward, then set to 0
+          if (typeof level.bumpTile === "function") {
+            level.bumpTile(tx, ty, () => {
+              if (tileId === 4) {
+                // Spawn coin at tile position
+                if (level.coins) {
+                  level.coins.push({ x: tx * level.tileSize, y: ty * level.tileSize });
+                }
+                // TODO: play coin sound
+              } else if (tileId === 5) {
+                // Spawn extra life (could push to a powerups array)
+                // TODO: implement extra life entity and spawn here
+              } else if (tileId === 6) {
+                // Spawn invincibility (could push to a powerups array)
+                // TODO: implement invincibility entity and spawn here
+              }
+              if (typeof level.setTile === "function") {
+                level.setTile(tx, ty, 0);
+              } else {
+                console.warn("level.setTile is not a function", level);
+              }
+            });
+          } else {
+            console.warn("level.bumpTile is not a function", level);
+          }
+          // TODO: play bump sound
+        }
+      }
       this.y -= this.vy;
       if (this.vy > 0) this.onGround = true;
       this.vy = 0;
@@ -68,8 +131,9 @@ export class Player {
   }
 
   collidesWithLevel(level) {
-    // Check 4 corners for solid tiles
+    // Check 4 corners for solid tiles (IDs 1-6)
     const ts = level.tileSize;
+    const solidIds = [1, 2, 3, 4, 5, 6];
     const corners = [
       { x: this.x, y: this.y },
       { x: this.x + this.width - 1, y: this.y },
@@ -79,7 +143,7 @@ export class Player {
     return corners.some(c => {
       const tx = Math.floor(c.x / ts);
       const ty = Math.floor(c.y / ts);
-      return level.getTile(tx, ty) === 1;
+      return solidIds.includes(level.getTile(tx, ty));
     });
   }
 
