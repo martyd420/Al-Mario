@@ -12,6 +12,9 @@
     "idle": "assets/enemy.png"
   },
   "coin": {
+    "bronze": "assets/coin_bronze.png",
+    "silver": "assets/coin_silver.png",
+    "gold": "assets/coin_gold.png",
     "default": "assets/coin.png"
   }
 }

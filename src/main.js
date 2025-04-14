@@ -81,7 +81,7 @@ function gameLoop(timestamp) {
     coins.forEach(coin => {
       if (!coin.collected && rectsOverlap(player, coin)) {
         coin.collected = true;
-        score += 100;
+        score += coin.value || 1;
       }
     });
 

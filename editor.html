@@ -50,6 +50,13 @@
   <option value="playerStart">Set Player Start</option>
   <option value="goal">Set Goal</option>
 </select>
+<label for="coinType" style="margin-left:1em;">Coin type:</label>
+<select id="coinType">
+  <option value="default" selected>Default</option>
+  <option value="silver">Monero</option>
+  <option value="gold">Litecoin</option>
+  <option value="bronze">Ethereum</option>
+</select>
 
 <div id="grid"></div>
 
@@ -103,7 +110,10 @@ function handleCellClick(x, y) {
   } else if (tool === "coin") {
     const idx = level.coins.findIndex(c => c.x === x * 16 && c.y === y * 48);
     if (idx >= 0) level.coins.splice(idx, 1);
-    else level.coins.push({ x: x * 16, y: y * 48 });
+    else {
+      const coinType = document.getElementById("coinType").value || "bronze";
+      level.coins.push({ x: x * 16, y: y * 48, type: coinType });
+    }
   } else if (tool === "playerStart") {
     level.playerStart = { x: x * 16, y: y * 48 };
   } else if (tool === "goal") {
