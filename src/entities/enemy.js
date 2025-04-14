@@ -50,20 +50,22 @@ export class Enemy {
     });
   }
 
-  draw(ctx, cameraX = 0) {
+  draw(ctx, cameraX = 0, cameraY = 0) {
+    const drawX = this.x - cameraX;
+    const drawY = this.y - cameraY;
     if (this.spriteManager && this.spriteManager.ready) {
       let dir = this.facing || 'left';
       const img = this.spriteManager.getSprite('enemy', dir) ||
                   this.spriteManager.getSprite('enemy', 'idle');
       if (img) {
-        ctx.drawImage(img, this.x - cameraX, this.y, this.width, this.height);
+        ctx.drawImage(img, drawX, drawY, this.width, this.height);
         return;
       }
     }
     // Fallback: colored rect
     ctx.fillStyle = '#b44';
-    ctx.fillRect(this.x - cameraX, this.y, this.width, this.height);
+    ctx.fillRect(drawX, drawY, this.width, this.height);
     ctx.strokeStyle = '#222';
-    ctx.strokeRect(this.x - cameraX, this.y, this.width, this.height);
+    ctx.strokeRect(drawX, drawY, this.width, this.height);
   }
 }

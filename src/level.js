@@ -30,7 +30,7 @@ export class Level {
   }
 
   // Draw the tilemap
-  draw(ctx, cameraX = 0) {
+  draw(ctx, cameraX = 0, cameraY = 0) {
     if (!this.bumpTiles) this.bumpTiles = {};
     const ts = this.tileSize;
     // Animate bump tiles
@@ -56,7 +56,7 @@ export class Level {
       for (let x = 0; x < this.width; x++) {
         const tile = this.tiles[y][x];
         const drawX = x * ts - cameraX;
-        let drawY = y * ts;
+        let drawY = y * ts - cameraY;
         const bump = this.bumpTiles[`${x},${y}`];
         if (bump) drawY += bump.offset;
 
@@ -111,13 +111,14 @@ export class Level {
     // Draw goal flag
     if (this.goal) {
       const gx = this.goal.x * ts - cameraX;
+      const gy = this.goal.y * ts - cameraY;
       ctx.fillStyle = '#fff';
-      ctx.fillRect(gx + ts * 0.7, this.goal.y * ts - ts * 1.2, ts * 0.2, ts * 1.2);
+      ctx.fillRect(gx + ts * 0.7, gy - ts * 1.2, ts * 0.2, ts * 1.2);
       ctx.fillStyle = '#e33';
       ctx.beginPath();
-      ctx.moveTo(gx + ts * 0.8, this.goal.y * ts - ts * 1.2);
-      ctx.lineTo(gx + ts * 1.2, this.goal.y * ts - ts * 1.0);
-      ctx.lineTo(gx + ts * 0.8, this.goal.y * ts - ts * 0.8);
+      ctx.moveTo(gx + ts * 0.8, gy - ts * 1.2);
+      ctx.lineTo(gx + ts * 1.2, gy - ts * 1.0);
+      ctx.lineTo(gx + ts * 0.8, gy - ts * 0.8);
       ctx.closePath();
       ctx.fill();
     }

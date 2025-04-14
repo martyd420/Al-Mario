@@ -50,6 +50,7 @@ let deathTimeout = null;
 
 // Camera state
 let cameraX = 0;
+let cameraY = 0;
 
 // Load level JSON
 async function loadLevel(levelNum) {
@@ -153,7 +154,9 @@ function gameLoop(timestamp) {
     // Camera logic
     // Center Mario, or offset slightly forward in direction of movement
     const viewportWidth = canvas.width;
+    const viewportHeight = canvas.height;
     const levelPixelWidth = level.width * level.tileSize;
+    const levelPixelHeight = level.height * level.tileSize;
     // Forward offset: 40% from left if moving right, 60% if moving left, else center
     let offset = 0.5;
     if (player.vx > 0.5) offset = 0.4;
@@ -162,8 +165,14 @@ function gameLoop(timestamp) {
       player.x + player.width * 0.5 - viewportWidth * offset,
       levelPixelWidth - viewportWidth
     ));
-    // Smoothly interpolate cameraX toward target (lerp)
+    // Vertical camera: center or slightly lower
+    const targetCameraY = Math.max(0, Math.min(
+      player.y + player.height * 0.5 - viewportHeight * 0.55,
+      levelPixelHeight - viewportHeight
+    ));
+    // Smoothly interpolate cameraX/Y toward target (lerp)
     cameraX += (targetCameraX - cameraX) * 0.02;
+    cameraY += (targetCameraY - cameraY) * 0.02;
 
     // Helper: rectangle overlap
     function rectsOverlap(a, b) {
@@ -189,10 +198,10 @@ function gameLoop(timestamp) {
     }
     hud.update({ score, lives, level: currentLevel });
   } else if (gameState === 'gameover') {
-    renderer.render(cameraX);
+    renderer.render(cameraX, cameraY);
     return;
   }
-  renderer.render(cameraX);
+  renderer.render(cameraX, cameraY);
   requestAnimationFrame(gameLoop);
 }
 
